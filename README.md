@@ -1,2 +1,2 @@
-# simple-note-authorization
+# go-pharos
 authorization service
