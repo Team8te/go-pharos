@@ -12,7 +12,7 @@ func (e *UDPEndpoint) ReceiveHandler(ctx context.Context, message *ds.Device) er
 		return nil
 	}
 
-	log.Info("New device message: %v, from: %v", message.UUID, message.IP)
+	log.Infof("New device message: %v, from: %v", message.UUID, message.IP)
 	return e.service.AddDevice(ctx, &ds.Device{
 		UUID: message.UUID,
 		IP:   message.IP,

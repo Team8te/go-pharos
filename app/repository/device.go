@@ -11,14 +11,14 @@ import (
 func (r *Repository) AddDevice(ctx context.Context, d *ds.Device) error {
 	query := r.qb.Insert(deviceTable).
 		SetMap(newDeviceMap(d)).
-		Suffix("RETURNING id")
+		Suffix("RETURNING id, create_at, update_at")
 
 	sql, args, err := query.ToSql()
 	if err != nil {
 		return perror.MakeError(err, perror.ErrorInternal)
 	}
 
-	err = r.db.QueryRowContext(ctx, sql, args...).Scan(&d.ID)
+	err = r.db.QueryRowxContext(ctx, sql, args...).StructScan(d)
 	if err != nil {
 		return perror.MakeError(err, perror.ErrorCodeDB)
 	}
@@ -27,14 +27,45 @@ func (r *Repository) AddDevice(ctx context.Context, d *ds.Device) error {
 }
 
 func newDeviceMap(d *ds.Device) map[string]interface{} {
-	var id interface{}
-
-	if d.ID == 0 {
-		id = sq.Expr("DEFAULT")
-	}
 	return map[string]interface{}{
-		"id":   id,
 		"uuid": d.UUID,
 		"ip":   d.IP,
 	}
+}
+
+func (r *Repository) ListDevice(ctx context.Context, limit, offset int) ([]*ds.Device, error) {
+	sql, args, err := r.qb.Select("*").
+		From(deviceTable).
+		Limit(uint64(limit)).
+		Offset(uint64(offset)).ToSql()
+	if err != nil {
+		return nil, perror.MakeError(err, perror.ErrorCodeDB)
+	}
+
+	result := []*ds.Device{}
+	err = r.db.SelectContext(ctx, &result, sql, args...)
+	if err != nil {
+		return nil, perror.MakeError(err, perror.ErrorCodeDB)
+	}
+
+	return result, nil
+}
+
+func (r *Repository) FindDevice(ctx context.Context, ip string) (*ds.Device, error) {
+	sql, args, err := r.qb.Select("*").
+		From(deviceTable).
+		Where(sq.And{
+			sq.Eq{"ip": ip},
+		}).ToSql()
+	if err != nil {
+		return nil, perror.MakeError(err, perror.ErrorCodeDB)
+	}
+
+	result := ds.Device{}
+	err = r.db.SelectContext(ctx, &result, sql, args...)
+	if err != nil {
+		return nil, perror.MakeError(err, perror.ErrorCodeDB)
+	}
+
+	return &result, nil
 }

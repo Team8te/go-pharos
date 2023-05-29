@@ -7,4 +7,5 @@ const (
 	ErrorCodeUndefined = Code("undefined")
 	ErrorInternal      = Code("internal")
 	ErrorCodeDB        = Code("db_error")
+	ErrorJobEnd        = Code("job_end")
 )

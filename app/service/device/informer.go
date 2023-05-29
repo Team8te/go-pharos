@@ -13,6 +13,8 @@ type DeviceInformer struct {
 
 type repository interface {
 	AddDevice(ctx context.Context, d *ds.Device) error
+	ListDevice(ctx context.Context, limit, offset int) ([]*ds.Device, error)
+	FindDevice(ctx context.Context, ip string) (*ds.Device, error)
 }
 
 func NewDeviceInformer(deviceUUID string, repo repository) *DeviceInformer {
@@ -30,6 +32,10 @@ func (i *DeviceInformer) AddDevice(ctx context.Context, d *ds.Device) error {
 	return i.repo.AddDevice(ctx, d)
 }
 
-func (i *DeviceInformer) ListDevices(limit, offset int) ([]*ds.Device, error) {
-	panic("not implemented")
+func (i *DeviceInformer) DeviceList(ctx context.Context, limit, offset int) ([]*ds.Device, error) {
+	return i.repo.ListDevice(ctx, limit, offset)
+}
+
+func (i *DeviceInformer) DeviceExists(ctx context.Context, ip string) (*ds.Device, error) {
+	return i.repo.FindDevice(ctx, ip)
 }

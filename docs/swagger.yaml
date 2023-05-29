@@ -1,4 +1,45 @@
 basePath: /v1
+definitions:
+  ds.Device:
+    properties:
+      create_at:
+        type: string
+      id:
+        type: integer
+      ip:
+        type: string
+      update_at:
+        type: string
+      uuid:
+        type: string
+    type: object
+  ds.File:
+    properties:
+      is_dir:
+        type: boolean
+      name:
+        type: string
+      path:
+        type: string
+      size:
+        type: integer
+    type: object
+  ds.Target:
+    properties:
+      ip:
+        type: string
+      path:
+        type: string
+    type: object
+  store.MoveFileRequest:
+    properties:
+      files:
+        items:
+          type: string
+        type: array
+      target:
+        $ref: '#/definitions/ds.Target'
+    type: object
 info:
   contact:
     email: support@swagger.io
@@ -15,17 +56,93 @@ paths:
   /device/list:
     get:
       consumes:
-      - '*/*'
+      - application/json
       description: get the status of server.
+      parameters:
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: offset
+        in: query
+        name: offset
+        type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: ok
           schema:
-            additionalProperties: true
-            type: object
-      summary: Show the status of server.
+            items:
+              $ref: '#/definitions/ds.Device'
+            type: array
       tags:
-      - root
+      - Device
+  /store/file/list:
+    get:
+      consumes:
+      - application/json
+      description: get the status of server.
+      parameters:
+      - description: path
+        in: query
+        name: path
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            items:
+              $ref: '#/definitions/ds.File'
+            type: array
+      tags:
+      - Store
+  /store/file/load:
+    post:
+      consumes:
+      - multipart/form-data
+      description: get the status of server.
+      parameters:
+      - description: file_name
+        in: formData
+        name: file_name
+        required: true
+        type: string
+      - description: file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      tags:
+      - Store
+  /store/file/move:
+    post:
+      consumes:
+      - application/json
+      description: get the status of server.
+      parameters:
+      - description: Request
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/store.MoveFileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      tags:
+      - Store
 swagger: "2.0"

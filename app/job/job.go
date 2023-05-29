@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	perror "github.com/go-pharos/pkg/platform/error"
 	"github.com/opentracing/opentracing-go"
 	log "github.com/sirupsen/logrus"
 )
@@ -57,6 +58,9 @@ func (j *Job) Run(ctx context.Context) (err error) {
 
 			err := j.w.Work(spanCtx)
 			if err != nil {
+				if perror.ExtractErrorCode(err) == perror.ErrorJobEnd {
+					return nil
+				}
 				log.WithField("job", j.w.Name()).Error("Job error: %v", err)
 			}
 		}
