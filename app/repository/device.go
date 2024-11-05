@@ -4,8 +4,8 @@ import (
 	"context"
 
 	sq "github.com/Masterminds/squirrel"
-	"github.com/go-pharos/app/ds"
-	perror "github.com/go-pharos/pkg/platform/error"
+	"github.com/Team8te/go-pharos/app/ds"
+	perror "github.com/Team8te/go-pharos/pkg/platform/error"
 )
 
 func (r *Repository) AddDevice(ctx context.Context, d *ds.Device) error {

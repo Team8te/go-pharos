@@ -5,21 +5,23 @@ import (
 	"syscall"
 	"time"
 
-	v1 "github.com/go-pharos/app/api/http/v1"
-	"github.com/go-pharos/app/api/udp"
-	"github.com/go-pharos/app/job"
-	"github.com/go-pharos/app/job/worker"
-	"github.com/go-pharos/app/repository"
-	"github.com/go-pharos/app/service/device"
-	"github.com/go-pharos/app/service/store"
-	"github.com/go-pharos/pkg/platform/closer"
+	v1 "github.com/Team8te/go-pharos/app/api/http/v1"
+	"github.com/Team8te/go-pharos/app/api/udp"
+	"github.com/Team8te/go-pharos/app/job"
+	"github.com/Team8te/go-pharos/app/job/worker"
+	"github.com/Team8te/go-pharos/app/repository"
+	"github.com/Team8te/go-pharos/app/service/device"
+	"github.com/Team8te/go-pharos/app/service/store"
+	"github.com/Team8te/go-pharos/app/service/transfer"
+	"github.com/Team8te/go-pharos/pkg/platform/closer"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/viper"
 
-	v1device "github.com/go-pharos/app/api/http/v1/device"
-	v1store "github.com/go-pharos/app/api/http/v1/store"
+	v1device "github.com/Team8te/go-pharos/app/api/http/v1/device"
+	v1store "github.com/Team8te/go-pharos/app/api/http/v1/store"
+	v1ws "github.com/Team8te/go-pharos/app/api/http/v1/ws"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -70,10 +72,16 @@ func (a *App) Init() error {
 			0, jobQueue,
 		),
 	)
+	viper.SetDefault("chunkSize", 512)
 
-	storeService := a.MakeStoreKeeper(viper.GetString("root"))
+	tr := transfer.NewTransfer(viper.GetInt("chunkSize"))
+	storeService := a.MakeStoreKeeper(viper.GetString("root"), tr)
 
-	a.e = v1.Register(v1device.NewDeviceEndpoint(deviceService), v1store.NewStoreEndpoint(storeService))
+	a.e = v1.Register(
+		v1device.NewDeviceEndpoint(deviceService),
+		v1store.NewStoreEndpoint(storeService),
+		v1ws.NewWSEndpoint(storeService),
+	)
 
 	return nil
 }
@@ -85,8 +93,8 @@ func (a *App) MakeDeviceService(db *sqlx.DB) *device.DeviceInformer {
 	)
 }
 
-func (a *App) MakeStoreKeeper(root string) *store.StoreKeeper {
-	return store.NewStoreKeeper(root)
+func (a *App) MakeStoreKeeper(root string, tr *transfer.Transfer) *store.StoreKeeper {
+	return store.NewStoreKeeper(root, tr)
 }
 
 func (a *App) Wait() error {

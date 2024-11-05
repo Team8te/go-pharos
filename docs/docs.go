@@ -111,18 +111,15 @@ const docTemplate = `{
                 ],
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "file_name",
-                        "name": "file_name",
-                        "in": "formData",
-                        "required": true
+                        "type": "file",
+                        "description": "the file",
+                        "name": "file",
+                        "in": "formData"
                     },
                     {
-                        "type": "file",
-                        "description": "file",
-                        "name": "file",
-                        "in": "formData",
-                        "required": true
+                        "type": "string",
+                        "name": "name",
+                        "in": "formData"
                     }
                 ],
                 "responses": {

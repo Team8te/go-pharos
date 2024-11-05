@@ -105,16 +105,13 @@ paths:
       - multipart/form-data
       description: get the status of server.
       parameters:
-      - description: file_name
-        in: formData
-        name: file_name
-        required: true
-        type: string
-      - description: file
+      - description: the file
         in: formData
         name: file
-        required: true
         type: file
+      - in: formData
+        name: name
+        type: string
       produces:
       - application/json
       responses:

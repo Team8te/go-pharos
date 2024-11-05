@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	perror "github.com/go-pharos/pkg/platform/error"
+	perror "github.com/Team8te/go-pharos/pkg/platform/error"
 	"github.com/opentracing/opentracing-go"
 	log "github.com/sirupsen/logrus"
 )

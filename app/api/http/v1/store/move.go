@@ -3,7 +3,7 @@ package store
 import (
 	"net/http"
 
-	"github.com/go-pharos/app/ds"
+	"github.com/Team8te/go-pharos/app/ds"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
 )

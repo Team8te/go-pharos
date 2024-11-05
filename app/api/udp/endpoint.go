@@ -3,7 +3,7 @@ package udp
 import (
 	"context"
 
-	"github.com/go-pharos/app/ds"
+	"github.com/Team8te/go-pharos/app/ds"
 )
 
 type deviceService interface {

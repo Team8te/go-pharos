@@ -1,7 +1,6 @@
 package store
 
 import (
-	"io"
 	"mime/multipart"
 
 	"github.com/labstack/echo/v4"
@@ -9,8 +8,8 @@ import (
 )
 
 type LoadRequest struct {
-	Name string                `json:"name"`
-	File *multipart.FileHeader `form:"file" binding:"required"`
+	Path string `form:"path"`
+	File *multipart.FileHeader
 }
 
 // DeviceList godoc
@@ -18,26 +17,26 @@ type LoadRequest struct {
 // @Tags Store
 // @Accept mpfd
 // @Produce json
-// @Param name formData string true "file_name"
-// @Param file formData file true "file"
+// @Param file formData file false "the file"
+// @Param request formData store.LoadRequest true "file_name"
 // @Success 200 {string} string	"ok"
 // @Router /store/file/load [post]
-func (e *StoreEndpoint) Load(ctx echo.Context) error {
+func (e *StoreEndpoint) Load(ctx echo.Context) (err error) {
 	log.WithField("api", "http").Debugf("Load")
 	req := &LoadRequest{}
 	ctx.Bind(req)
-	file, err := ctx.FormFile("file")
+	req.File, err = ctx.FormFile("file")
 	if err != nil {
 		return err
 	}
 
-	src, err := file.Open()
+	src, err := req.File.Open()
 	if err != nil {
 		return err
 	}
 
 	defer src.Close()
-	io.Copy()
+	e.st.UploadFile(ctx.Request().Context(), src, req.Path)
 
 	return nil
 }

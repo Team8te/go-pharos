@@ -29,14 +29,15 @@ func (q *JobQueue) Push(w Worker) int {
 	t := &task{
 		j: NewJob(0, w),
 	}
+
+	q.notifier <- struct{}{}
+
 	q.mx.Lock()
 	defer q.mx.Unlock()
 
 	t.id = index
 	index++
 	q.queue.PushBack(t)
-
-	q.notifier <- struct{}{}
 
 	return t.id
 }
