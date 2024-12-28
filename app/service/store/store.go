@@ -86,7 +86,7 @@ func (s *StoreKeeper) MoveFiles(ctx context.Context, files []string, target *ds.
 		}
 	*/
 
-	//s.tr.AddTask(ctx, target, files)
+	s.tr.AddTask(ctx, target, files)
 
 	return nil
 }

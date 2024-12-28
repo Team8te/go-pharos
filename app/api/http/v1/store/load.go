@@ -8,8 +8,8 @@ import (
 )
 
 type LoadRequest struct {
-	Path string `form:"path"`
-	File *multipart.FileHeader
+	Path string                `form:"path"`
+	File *multipart.FileHeader `form:"file" binding:"required"`
 }
 
 // DeviceList godoc
@@ -17,8 +17,8 @@ type LoadRequest struct {
 // @Tags Store
 // @Accept mpfd
 // @Produce json
-// @Param file formData file false "the file"
-// @Param request formData store.LoadRequest true "file_name"
+// @Param name formData string true "file_name"
+// @Param file formData file true "file"
 // @Success 200 {string} string	"ok"
 // @Router /store/file/load [post]
 func (e *StoreEndpoint) Load(ctx echo.Context) (err error) {
