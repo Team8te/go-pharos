@@ -1,0 +1,9 @@
+version: '3'
+services:
+  go-pharos-app:
+    image: go-pharos-develop
+    command: bash -c "cd /home/app/go-pharos && make install && go-pharos"
+    volumes:
+      - ./:/home/app/go-pharos
+    ports:
+      - "4000:3000"
