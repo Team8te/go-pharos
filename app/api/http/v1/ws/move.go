@@ -103,7 +103,7 @@ func (e *WSEndpoint) processChunk(ctx context.Context, state *fileState, t int, 
 	return nil
 }
 
-func (e *WSEndpoint) readHash(ctx context.Context, conn *websocket.Conn) ([]byte, error) {
+func (e *WSEndpoint) readHash(_ context.Context, conn *websocket.Conn) ([]byte, error) {
 	t, msg, err := conn.ReadMessage()
 	if err != nil {
 		return nil, err

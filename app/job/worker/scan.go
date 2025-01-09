@@ -28,7 +28,7 @@ func (e *Scan) Init() error {
 
 func (e *Scan) Work(ctx context.Context) error {
 	// broadcasting rather than unicasting
-	broadcastAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("0.0.0.0:%d", e.port))
+	broadcastAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("255.255.255.255:%d", e.port))
 	if err != nil {
 		return err
 	}

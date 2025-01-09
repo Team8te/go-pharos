@@ -26,12 +26,12 @@ func main() {
 	var configPath string
 	var client bool
 	var uu string
-	var path string
+	var p string
 	pflag.StringVarP(&configPath, "config", "c", "", "Config file path")
 	pflag.BoolVarP(&showHelp, "help", "h", false, "Show help message")
 	pflag.BoolVarP(&client, "client", "", false, "client send")
 	pflag.StringVarP(&uu, "url", "", "", "target url")
-	pflag.StringVarP(&path, "path", "p", "", "target url")
+	pflag.StringVarP(&p, "path", "p", "", "path")
 
 	pflag.Parse()
 	if showHelp {
@@ -46,10 +46,9 @@ func main() {
 			return
 		}
 
-		err = sendContent(u, path)
+		err = sendContent(u, p)
 		return
 	}
-
 	app, err := app.NewApp(configPath)
 	if err != nil {
 		return

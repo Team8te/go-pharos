@@ -11,10 +11,10 @@ import (
 	"github.com/Team8te/go-pharos/app/job/worker"
 	"github.com/Team8te/go-pharos/app/repository"
 	"github.com/Team8te/go-pharos/app/service/device"
+	"github.com/Team8te/go-pharos/app/service/license"
 	"github.com/Team8te/go-pharos/app/service/store"
 	"github.com/Team8te/go-pharos/app/service/transfer"
 	"github.com/Team8te/go-pharos/pkg/platform/closer"
-	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/spf13/viper"
@@ -34,6 +34,11 @@ type App struct {
 
 func NewApp(config string) (*App, error) {
 	viper.SetConfigFile(config)
+	err := viper.ReadInConfig()
+	if err != nil {
+		return nil, err
+	}
+
 	return &App{
 		Closer: closer.New(syscall.SIGTERM, syscall.SIGINT),
 	}, nil
@@ -53,12 +58,17 @@ func (a *App) Run() error {
 }
 
 func (a *App) Init() error {
+	l, err := license.NewLicenser(viper.GetString("license"))
+	if err != nil {
+		return err
+	}
+
 	db, err := sqlx.Open("sqlite3", ":memory:")
 	if err != nil {
 		return err
 	}
 
-	deviceService := a.MakeDeviceService(db)
+	deviceService := a.MakeDeviceService(db, l)
 	jobQueue := job.NewQueue()
 	port := 9910
 	a.jobs = append(a.jobs,
@@ -86,9 +96,9 @@ func (a *App) Init() error {
 	return nil
 }
 
-func (a *App) MakeDeviceService(db *sqlx.DB) *device.DeviceInformer {
+func (a *App) MakeDeviceService(db *sqlx.DB, l *license.Licenser) *device.DeviceInformer {
 	return device.NewDeviceInformer(
-		uuid.New().String(),
+		l.GetUUID(),
 		repository.NewRepository(db),
 	)
 }

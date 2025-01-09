@@ -1,6 +1,6 @@
 version: '3'
 services:
-  go-pharos-app:
+  go-pharos-develop:
     image: go-pharos-develop
     command: bash -c "cd /home/app/go-pharos && make install && go-pharos"
     volumes:

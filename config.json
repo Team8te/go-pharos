@@ -1,4 +1,5 @@
 {
     "root": "./",
-    "chunkSize": 1024
+    "chunkSize": 1024,
+    "license": "~/.pharos"
 }
